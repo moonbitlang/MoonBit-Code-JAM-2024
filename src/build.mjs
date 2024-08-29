@@ -1,11 +1,11 @@
 import fs from 'node:fs'
 
-fs.rmSync('.dist', { recursive: true, force: true })
-fs.mkdirSync('.dist')
+fs.rmSync('dist', { recursive: true, force: true })
+fs.mkdirSync('dist')
 
 const games = fs
-  .readdirSync('.', { withFileTypes: true })
-  .filter(d => d.isDirectory() && !d.name.startsWith('.'))
+  .readdirSync('teams', { withFileTypes: true })
+  .filter(d => d.isDirectory())
   .map(d => d.name)
 
 const gameCards = games
@@ -46,9 +46,9 @@ const index = /*html*/ `
 </html>
 `
 
-fs.writeFileSync('.dist/index.html', index)
+fs.writeFileSync('dist/index.html', index)
 
-const wasm4Files = fs.readdirSync('.templates/wasm4')
+const wasm4Files = fs.readdirSync('templates/wasm4')
 
 for (const game of games) {
   const gameIndex = /*html*/ `
@@ -66,8 +66,8 @@ for (const game of games) {
 `
   fs.mkdirSync(`.dist/${game}`)
   for (const file of wasm4Files) {
-    fs.copyFileSync(`.templates/wasm4/${file}`, `.dist/${game}/${file}`)
+    fs.copyFileSync(`templates/wasm4/${file}`, `dist/${game}/${file}`)
   }
-  fs.copyFileSync(`${game}/game.wasm`, `.dist/${game}/cart.wasm`)
-  fs.writeFileSync(`.dist/${game}/index.html`, gameIndex)
+  fs.copyFileSync(`${game}/game.wasm`, `dist/${game}/cart.wasm`)
+  fs.writeFileSync(`dist/${game}/index.html`, gameIndex)
 }
