@@ -1,5 +1,7 @@
 import fs from 'node:fs'
 
+const PREFIX = 'MoonBit-Code-JAM-2024'
+
 fs.rmSync('.dist', { recursive: true, force: true })
 fs.mkdirSync('.dist')
 
@@ -8,7 +10,7 @@ const games = fs
   .filter(d => d.isDirectory() && !d.name.startsWith('.'))
   .map(d => d.name)
 
-const lis = games.map(d => `<li><a href='/${d}'>${d}</a></li>`)
+const lis = games.map(d => `<li><a href='${PREFIX}/${d}'>${d}</a></li>`)
 
 const index = /*html*/ `
 <!DOCTYPE html>
@@ -48,5 +50,6 @@ for (const game of games) {
   for (const file of wasm4Files) {
     fs.copyFileSync(`.templates/wasm4/${file}`, `.dist/${game}/${file}`)
   }
+  fs.copyFileSync(`${game}/game.wasm`, `.dist/${game}/cart.wasm`)
   fs.writeFileSync(`.dist/${game}/index.html`, gameIndex)
 }
