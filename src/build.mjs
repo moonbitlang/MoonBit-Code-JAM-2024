@@ -64,10 +64,10 @@ for (const game of games) {
   </body>
 </html>
 `
-  fs.mkdirSync(`.dist/${game}`)
+  fs.mkdirSync(`dist/${game}`)
   for (const file of wasm4Files) {
     fs.copyFileSync(`templates/wasm4/${file}`, `dist/${game}/${file}`)
   }
-  fs.copyFileSync(`${game}/game.wasm`, `dist/${game}/cart.wasm`)
+  fs.copyFileSync(`teams/${game}/game.wasm`, `dist/${game}/cart.wasm`)
   fs.writeFileSync(`dist/${game}/index.html`, gameIndex)
 }
