@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import querystring from 'node:querystring'
 
 fs.rmSync('dist', { recursive: true, force: true })
 fs.mkdirSync('dist')
@@ -12,7 +13,7 @@ const gameCards = games
   .map(d =>
     /*html*/ `
 <div>
-  <a href='${d}/index.html'>${d}</a>
+  <a href='${querystring.escape(d)}/index.html'>${d}</a>
 </div>
 `.trim(),
   )
