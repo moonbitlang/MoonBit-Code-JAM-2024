@@ -8,7 +8,15 @@ const games = fs
   .filter(d => d.isDirectory() && !d.name.startsWith('.'))
   .map(d => d.name)
 
-const lis = games.map(d => `<li><a href='${d}'>${d}</a></li>`)
+const gameCards = games
+  .map(d =>
+    /*html*/ `
+<div>
+  <a href='${d}/index.html'>${d}</a>
+</div>
+`.trim(),
+  )
+  .join('\n')
 
 const index = /*html*/ `
 <!DOCTYPE html>
@@ -17,11 +25,23 @@ const index = /*html*/ `
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MoonBit Code JAM 2024</title>
+    <style>
+      :root {
+        font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+      }
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+      h1 {
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
-    <ul>
-    ${lis}
-    </ul>
+    <h1>MoonBit Code JAM 2024</h1>
+    <div>
+    ${gameCards}
+    </div>
   </body>
 </html>
 `
