@@ -62,7 +62,7 @@ const index = /*html*/ `
         margin: 0 6rem;
       }
 
-      @media (width < 996px) {
+      @media (max-width: 996px) {
         main {
           margin: 0 1rem;
         }
@@ -92,6 +92,12 @@ const index = /*html*/ `
       .buttons {
         display: flex;
         gap: 1rem;
+      }
+
+      @media (max-width: 996px) {
+        .buttons {
+          flex-direction: column;
+        }
       }
 
       .game-cards {
@@ -215,7 +221,7 @@ for (const game of games) {
         padding: 2rem 0;
       }
 
-      @media (width < 996px) {
+      @media (max-width: 996px) {
         main {
           margin: 0 1rem;
         }
