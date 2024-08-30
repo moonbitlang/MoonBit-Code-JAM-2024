@@ -4,7 +4,7 @@
     "build": "node ./src/build.mjs"
   },
   "devDependencies": {
-    "marked": "^14.1.0",
+    "markdown-it": "^14.1.0",
     "wasm4": "^2.7.0"
   }
 }

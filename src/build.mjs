@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import querystring from 'node:querystring'
-import * as marked from 'marked'
+import markdownit from 'markdown-it'
+
+const md = markdownit()
 
 fs.rmSync('dist', { recursive: true, force: true })
 fs.mkdirSync('dist')
@@ -175,7 +177,7 @@ for (const game of games) {
   let readmeHtml = undefined
   if (fs.existsSync(`teams/${game}/README.md`)) {
     const readme = fs.readFileSync(`teams/${game}/README.md`, 'utf8')
-    readmeHtml = marked.parse(readme, { gfm: true, async: false })
+    readmeHtml = md.render(readme)
   }
   const gameIndex = /*html*/ `
 <!DOCTYPE html>
