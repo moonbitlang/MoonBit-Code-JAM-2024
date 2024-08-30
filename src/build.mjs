@@ -153,6 +153,12 @@ const index = /*html*/ `
         cursor: pointer;
       }
 
+      .temp-section h1 {
+        margin-top: 2rem;
+        font-size: 3rem;
+        text-align: center;
+      }
+
     </style>
   </head>
   <body>
@@ -166,9 +172,9 @@ const index = /*html*/ `
             <a class='button' href='https://github.com/moonbitlang/MoonBit-Code-JAM-2024'>提交作品</a>
           </div>
         </section>
-        <div class='game-cards'>
-        ${gameCards}
-        </div>
+        <section class='temp-section'>
+          <h1>敬请期待</h1>
+        </section>
       </main>
     </div>
   </body>
