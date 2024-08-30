@@ -38,7 +38,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - name: build pages
-        run: node src/build.mjs
+        run: |
+          npm i
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
