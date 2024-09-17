@@ -7,32 +7,87 @@ const md = markdownit()
 fs.rmSync('dist', { recursive: true, force: true })
 fs.mkdirSync('dist')
 
-const games = fs
+type MetaInfo = {
+  teamName: string
+  title?: string
+  control?: string
+  readme?: string
+  cover: boolean
+}
+
+function collectMetaInfo(teamName: string): MetaInfo {
+  const metaInfo: MetaInfo = {
+    teamName,
+    cover: false,
+  }
+
+  const files = fs
+    .readdirSync(`teams/${teamName}`, { withFileTypes: true })
+    .filter(d => d.isFile())
+    .map(d => d.name)
+
+  for (const file of files) {
+    const read = (file: string): string =>
+      fs.readFileSync(`teams/${teamName}/${file}`, 'utf8')
+    switch (file) {
+      case 'cover.png': {
+        metaInfo.cover = true
+        continue
+      }
+      case 'README.md': {
+        metaInfo.readme = read(file)
+        continue
+      }
+      case 'title': {
+        metaInfo.title = read(file)
+        continue
+      }
+      case 'control': {
+        metaInfo.control = read(file)
+        continue
+      }
+    }
+  }
+
+  return metaInfo
+}
+
+const teamNames = fs
   .readdirSync('teams', { withFileTypes: true })
   .filter(d => d.isDirectory())
   .map(d => d.name)
 
-const gameCards = games
-  .map(d => {
-    const coverPath = fs.existsSync(`teams/${d}/cover.png`)
-      ? `${querystring.escape(d)}/cover.png`
-      : 'default-cover.png'
-    return /*html*/ `
+const metaInfos = teamNames.map(collectMetaInfo)
+
+function renderGameCard(metaInfo: MetaInfo): string {
+  const coverPath = metaInfo.cover
+    ? `${querystring.escape(metaInfo.teamName)}/cover.png`
+    : 'default-cover.png'
+
+  const teamPath = querystring.escape(metaInfo.teamName)
+
+  const footer = metaInfo.title
+    ? `<h2>${metaInfo.title}</h2><p>${metaInfo.teamName}</p>`
+    : `<p>${metaInfo.teamName}</p>`
+
+  return /*html*/ `
 <div class='game-card'>
-  <a href='${querystring.escape(d)}/index.html'>
+  <a href='${teamPath}/index.html'>
     <div class='game-card__cover'>
       <img src='${coverPath}'/>
     </div>
     <div class='game-card__footer'>
-      <p href='${querystring.escape(d)}/index.html'>${d}</p>
+      ${footer}
     </div>
   </a>
 </div>
 `.trim()
-  })
-  .join('\n')
+}
 
-const index = /*html*/ `
+function indexHtml(metaInfos: MetaInfo[]): string {
+  const gameCards = metaInfos.map(renderGameCard).join('\n')
+
+  return /*html*/ `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -47,7 +102,7 @@ const index = /*html*/ `
         box-sizing: border-box;
       }
 
-      body, main, h1, p {
+      body, main, h1, h2, p {
         padding: 0;
         margin: 0
       }
@@ -131,12 +186,18 @@ const index = /*html*/ `
       }
 
       .game-card__cover img {
+        border-radius: 0.5rem 0.5rem 0 0;
         display: block;
         width: 100%;
       }
 
       .game-card__footer {
         padding: 1rem;
+      }
+
+      .game-card__footer h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
       }
 
       .button {
@@ -152,7 +213,6 @@ const index = /*html*/ `
         background-color: rgb(158, 16, 132, 0.9);
         cursor: pointer;
       }
-
     </style>
   </head>
   <body>
@@ -174,24 +234,19 @@ const index = /*html*/ `
   </body>
 </html>
 `
+}
 
-fs.writeFileSync('dist/index.html', index)
-
-const wasm4Files = fs.readdirSync('node_modules/wasm4/assets/runtime/slim')
-
-for (const game of games) {
-  let readmeHtml = undefined
-  if (fs.existsSync(`teams/${game}/README.md`)) {
-    const readme = fs.readFileSync(`teams/${game}/README.md`, 'utf8')
-    readmeHtml = md.render(readme)
-  }
-  const gameIndex = /*html*/ `
+function gameIndexHtml(metaInfo: MetaInfo): string {
+  const title = metaInfo.title ?? metaInfo.teamName
+  const control = metaInfo.control ?? ''
+  const readme = metaInfo.readme ? md.render(metaInfo.readme) : ''
+  return /*html*/ `
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${game}</title>
+    <title>${title}</title>
     <style>
       :root {
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
@@ -235,9 +290,10 @@ for (const game of games) {
         aspect-ratio: 1;
       }
 
-      .readme {
-        line-height: 1.5;
-        word-wrap: break-word;
+      .control {
+        text-align: center;
+        font-size: 1rem;
+        color: rgb(245, 246, 247)
       }
 
     </style>
@@ -246,30 +302,39 @@ for (const game of games) {
     <div class='main-wrapper'>
       <main>
         <iframe class="wasm4-game" src="game.html" frameborder="0"></iframe>
-        ${
-          readmeHtml
-            ? /*html*/ `<article class='readme'>${readmeHtml}</article>`
-            : ''
-        }
+        <p class="control">${control}</p>
+        <h1>${title}</h1>
+        <article>
+          ${readme}
+        </article>
       </main>
     </div>
   </body>
 </html>
 `
-  fs.mkdirSync(`dist/${game}`)
+}
+
+function copyWasm4(dist: string) {
+  const wasm4Files = fs.readdirSync('node_modules/wasm4/assets/runtime/slim')
   for (const file of wasm4Files) {
     fs.copyFileSync(
       `node_modules/wasm4/assets/runtime/slim/${file}`,
-      `dist/${game}/${file === 'index.html' ? 'game.html' : file}`,
+      `dist/${dist}/${file === 'index.html' ? 'game.html' : file}`,
     )
   }
-  for (const file of fs.readdirSync(`teams/${game}`)) {
-    fs.copyFileSync(
-      `teams/${game}/${file}`,
-      `dist/${game}/${file === 'game.wasm' ? 'cart.wasm' : file}`,
-    )
-  }
-  fs.writeFileSync(`dist/${game}/index.html`, gameIndex)
 }
 
+fs.writeFileSync('dist/index.html', indexHtml(metaInfos))
 fs.copyFileSync('assets/default-cover.png', 'dist/default-cover.png')
+for (const metaInfo of metaInfos) {
+  const gameIndex = gameIndexHtml(metaInfo)
+  fs.mkdirSync(`dist/${metaInfo.teamName}`)
+  copyWasm4(metaInfo.teamName)
+  for (const file of fs.readdirSync(`teams/${metaInfo.teamName}`)) {
+    fs.copyFileSync(
+      `teams/${metaInfo.teamName}/${file}`,
+      `dist/${metaInfo.teamName}/${file === 'game.wasm' ? 'cart.wasm' : file}`,
+    )
+  }
+  fs.writeFileSync(`dist/${metaInfo.teamName}/index.html`, gameIndex)
+}
