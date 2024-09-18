@@ -15,7 +15,8 @@ const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" w
 fs.rmSync('dist', { recursive: true, force: true })
 fs.mkdirSync('dist')
 
-async function getPRInfo(prNumber: number) {
+async function getPRInfo(teamName: string) {
+  const prNumber = getPrNumber(teamName)
   const res = await ghClient.request(
     'GET /repos/{owner}/{repo}/pulls/{pull_number}',
     {
@@ -72,10 +73,9 @@ function getPrNumber(teamName: string): number {
 }
 
 async function collectMetaInfo(teamName: string): Promise<MetaInfo> {
-  const prNumber = getPrNumber(teamName)
   const prInfo = process.env.DEV
     ? JSON.parse(fs.readFileSync('data.json', 'utf8'))
-    : await getPRInfo(prNumber)
+    : await getPRInfo(teamName)
 
   const metaInfo: MetaInfo = {
     teamName,
