@@ -1,11 +1,37 @@
 import fs from 'node:fs'
+import cp from 'node:child_process'
 import querystring from 'node:querystring'
 import markdownit from 'markdown-it'
+import * as octokit from 'octokit'
+
+const ghClient = new octokit.Octokit({
+  auth: process.env.GITHUB_TOKEN,
+})
 
 const md = markdownit()
 
+const mockData = JSON.parse(fs.readFileSync('data.json', 'utf8'))
+
+const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="1em" height="1em" stroke="currentColor" fill="currentColor" ><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc. --><path d="M287.9 0c9.2 0 17.6 5.2 21.6 13.5l68.6 141.3 153.2 22.6c9 1.3 16.5 7.6 19.3 16.3s.5 18.1-5.9 24.5L433.6 328.4l26.2 155.6c1.5 9-2.2 18.1-9.7 23.5s-17.3 6-25.3 1.7l-137-73.2L151 509.1c-8.1 4.3-17.9 3.7-25.3-1.7s-11.2-14.5-9.7-23.5l26.2-155.6L31.1 218.2c-6.5-6.4-8.7-15.9-5.9-24.5s10.3-14.9 19.3-16.3l153.2-22.6L266.3 13.5C270.4 5.2 278.7 0 287.9 0zm0 79L235.4 187.2c-3.5 7.1-10.2 12.1-18.1 13.3L99 217.9 184.9 303c5.5 5.5 8.1 13.3 6.8 21L171.4 443.7l105.2-56.2c7.1-3.8 15.6-3.8 22.6 0l105.2 56.2L384.2 324.1c-1.3-7.7 1.2-15.5 6.8-21l85.9-85.1L358.6 200.5c-7.8-1.2-14.6-6.1-18.1-13.3L287.9 79z"/></svg>`
+
 fs.rmSync('dist', { recursive: true, force: true })
 fs.mkdirSync('dist')
+
+async function getPRInfo(prNumber: number) {
+  const res = await ghClient.request(
+    'GET /repos/{owner}/{repo}/pulls/{pull_number}',
+    {
+      owner: 'moonbitlang',
+      repo: 'MoonBit-Code-JAM-2024',
+      pull_number: prNumber,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    },
+  )
+
+  return res.data
+}
 
 type MetaInfo = {
   teamName: string
@@ -13,12 +39,48 @@ type MetaInfo = {
   control?: string
   readme?: string
   cover: boolean
+  prInfo: Awaited<ReturnType<typeof getPRInfo>>
 }
 
-function collectMetaInfo(teamName: string): MetaInfo {
+function $(strings: TemplateStringsArray, ...args: string[]): string {
+  const command = strings.reduce(
+    (prev, current, i) => prev + args[i - 1] + current,
+  )
+  return cp.execSync(command).toString().trim()
+}
+
+function getPrNumber(teamName: string): number {
+  const files = fs
+    .readdirSync(`teams/${teamName}`, { withFileTypes: true })
+    .filter(d => d.isFile())
+    .map(d => d.name)
+
+  const latestFile = files.sort((a, b) => {
+    const aTime = fs.statSync(`teams/${teamName}/${a}`).ctimeMs
+    const bTime = fs.statSync(`teams/${teamName}/${b}`).ctimeMs
+    return bTime - aTime
+  })[0]
+
+  const commit = $`git log --format=%H teams/${teamName}/${latestFile}`
+  const oldestMergeCommit =
+    $`git rev-list --reverse --merges ${commit}^..HEAD`.split('\n')[0]
+  const mergeCommitMessage = $`git log --format=%B -n 1 ${oldestMergeCommit}`
+  const title = mergeCommitMessage.split('\n')[0]
+  const prNumber = title.match(/Merge pull request #(\d+)/)?.[1]
+  if (prNumber === undefined) {
+    throw new Error('No PR number found')
+  }
+  return Number(prNumber)
+}
+
+async function collectMetaInfo(teamName: string): Promise<MetaInfo> {
+  const prNumber = getPrNumber(teamName)
+  const prInfo = process.env.DEV ? mockData : await getPRInfo(prNumber)
+
   const metaInfo: MetaInfo = {
     teamName,
     cover: false,
+    prInfo,
   }
 
   const files = fs
@@ -57,7 +119,7 @@ const teamNames = fs
   .filter(d => d.isDirectory())
   .map(d => d.name)
 
-const metaInfos = teamNames.map(collectMetaInfo)
+const metaInfos = await Promise.all(teamNames.map(collectMetaInfo))
 
 function renderGameCard(metaInfo: MetaInfo): string {
   const coverPath = metaInfo.cover
@@ -186,7 +248,6 @@ function indexHtml(metaInfos: MetaInfo[]): string {
       }
 
       .game-card__cover img {
-        border-radius: 0.5rem 0.5rem 0 0;
         display: block;
         width: 100%;
       }
@@ -240,6 +301,48 @@ function gameIndexHtml(metaInfo: MetaInfo): string {
   const title = metaInfo.title ?? metaInfo.teamName
   const control = metaInfo.control ?? ''
   const readme = metaInfo.readme ? md.render(metaInfo.readme) : ''
+  const authorName = metaInfo.prInfo.head.user.login
+  const authorUrl = metaInfo.prInfo.head.user.html_url
+  const avatarUrl = metaInfo.prInfo.head.user.avatar_url
+  const starUrl = metaInfo.prInfo.head.repo?.html_url
+  const updateTime = metaInfo.prInfo.merged_at
+
+  if (starUrl === undefined || updateTime === null) {
+    throw new Error(
+      JSON.stringify(
+        {
+          title,
+          control,
+          readme,
+          starUrl,
+          avatarUrl,
+          updateTime,
+        },
+        null,
+        2,
+      ),
+    )
+  }
+
+  const updateDate = new Date(updateTime).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  const avatar = /*html*/ `
+    <div class="avatar">
+      <a href="${authorUrl}" class="avatar__photo" target="_blank">
+        <img src="${avatarUrl}"/>
+      </a>
+      <div class="avatar__intro">
+        <div class="avatar__name">
+          <a href="${authorUrl}" target="_blank">${authorName}</a>
+        </div>
+        <p class="avatar__subtitle">${updateDate}</p>
+      </div>
+    </div>
+  `
   return /*html*/ `
 <!DOCTYPE html>
 <html lang="en">
@@ -296,6 +399,54 @@ function gameIndexHtml(metaInfo: MetaInfo): string {
         color: rgb(245, 246, 247)
       }
 
+      .icons {
+        margin-left: 0.5rem
+      }
+
+      .icons a {
+        color: white
+      }
+
+      .icons a:hover {
+        color: #f44cd5
+      }
+
+      .avatar {
+        display: flex;
+        gap: 1.5rem
+      }
+
+      .avatar__photo img {
+        height: 64px;
+        border-radius: 50%;
+        display: block
+      }
+
+      .avatar__intro {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        justify-content: center;
+      }
+
+      .avatar__name {
+        font-size: 1.25rem;
+        font-weight: bold;
+      }
+
+      .avatar__name a {
+        color: #f44cd5;
+        text-decoration: none;
+      }
+
+      .avatar__name a:hover {
+        text-decoration: underline;
+      }
+
+      .avatar__subtitle {
+        margin: 0;
+      }
+
     </style>
   </head>
   <body>
@@ -303,7 +454,8 @@ function gameIndexHtml(metaInfo: MetaInfo): string {
       <main>
         <iframe class="wasm4-game" src="game.html" frameborder="0"></iframe>
         <p class="control">${control}</p>
-        <h1>${title}</h1>
+        <h1>${title} <span class="icons"><a href="${starUrl}">${starSvg}</a></span></h1>
+        ${avatar}
         <article>
           ${readme}
         </article>

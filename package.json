@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "DEV=true vite",
     "build": "tsx ./src/build.mts"
   },
   "devDependencies": {
@@ -9,6 +9,7 @@
     "@types/node": "^22.5.5",
     "chokidar": "^4.0.0",
     "markdown-it": "^14.1.0",
+    "octokit": "^4.0.2",
     "tsx": "^4.19.1",
     "vite": "^5.4.6",
     "wasm4": "^2.7.0"
