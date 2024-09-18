@@ -302,19 +302,18 @@ function gameIndexHtml(metaInfo: MetaInfo): string {
   const control = metaInfo.control ?? ''
   const readme = metaInfo.readme ? md.render(metaInfo.readme) : ''
   const authorName = metaInfo.prInfo.head.user.login
+  const repoName = metaInfo.prInfo.head.repo?.name
   const authorUrl = metaInfo.prInfo.head.user.html_url
   const avatarUrl = metaInfo.prInfo.head.user.avatar_url
-  const starUrl = metaInfo.prInfo.head.repo?.html_url
   const updateTime = metaInfo.prInfo.merged_at
 
-  if (starUrl === undefined || updateTime === null) {
+  if (repoName === undefined || updateTime === null) {
     throw new Error(
       JSON.stringify(
         {
           title,
           control,
           readme,
-          starUrl,
           avatarUrl,
           updateTime,
         },
@@ -399,16 +398,11 @@ function gameIndexHtml(metaInfo: MetaInfo): string {
         color: rgb(245, 246, 247)
       }
 
-      .icons {
-        margin-left: 0.5rem
-      }
-
-      .icons a {
-        color: white
-      }
-
-      .icons a:hover {
-        color: #f44cd5
+      .vote {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.125rem;
       }
 
       .avatar {
@@ -454,7 +448,15 @@ function gameIndexHtml(metaInfo: MetaInfo): string {
       <main>
         <iframe class="wasm4-game" src="game.html" frameborder="0"></iframe>
         <p class="control">${control}</p>
-        <h1>${title} <span class="icons"><a href="${starUrl}">${starSvg}</a></span></h1>
+        <h1>${title}</h1>
+        <p class="vote">Star仓库，为ta投票
+        <iframe src="https://ghbtns.com/github-btn.html?user=${querystring.escape(
+          authorName,
+        )}&repo=${querystring.escape(
+    repoName,
+  )}&type=star&count=true&size=large" frameborder="0" scrolling="0" width="150" height="32" title="GitHub">
+        </iframe>
+        </p>
         ${avatar}
         <article>
           ${readme}
