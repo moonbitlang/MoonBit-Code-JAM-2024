@@ -1,5 +1,4 @@
 /dist
 node_modules
 meta.json
-data.json
 test.mts

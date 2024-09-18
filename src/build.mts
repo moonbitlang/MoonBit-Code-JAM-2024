@@ -74,7 +74,7 @@ function getPrNumber(teamName: string): number {
 
 async function collectMetaInfo(teamName: string): Promise<MetaInfo> {
   const prInfo = process.env.DEV
-    ? JSON.parse(fs.readFileSync('data.json', 'utf8'))
+    ? JSON.parse(fs.readFileSync('dev/data.json', 'utf8'))
     : await getPRInfo(teamName)
 
   const metaInfo: MetaInfo = {
