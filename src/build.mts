@@ -8,7 +8,11 @@ const ghClient = new octokit.Octokit({
   auth: process.env.GITHUB_TOKEN,
 })
 
-const md = markdownit()
+const md = markdownit({
+  html: true,
+  linkify: true,
+  typographer: true,
+})
 
 function githubBtn(
   authorName: string,
