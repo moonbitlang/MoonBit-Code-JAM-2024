@@ -404,6 +404,15 @@ function gameIndexHtml(metaInfo: MetaInfo): string {
         margin: 0
       }
 
+      a {
+        color: #f44cd5;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
       .main-wrapper {
         background-color: #18191a;
         color: rgb(245, 246, 247);
