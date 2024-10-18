@@ -320,7 +320,7 @@ function indexHtml(metaInfos: MetaInfo[]): string {
           <h1>MoonBit Code JAM 2024</h1>
           <p>选手提交作品展示</p>
           <div class='buttons'>
-            <a class='button' href='https://tianchi.aliyun.com/s/399e702c1b75629138f56fdb6f5e411a'>立即报名</a>
+            <a class='button' href='https://tianchi.aliyun.com/competition/entrance/532262'>立即报名</a>
             <a class='button' href='https://github.com/moonbitlang/MoonBit-Code-JAM-2024'>提交作品</a>
           </div>
         </section>
