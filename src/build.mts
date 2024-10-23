@@ -33,7 +33,6 @@ fs.mkdirSync('dist')
 
 async function getPRInfo(teamName: string) {
   const prNumber = getPrNumber(teamName)
-  console.log(teamName, prNumber)
   const res = await ghClient.request(
     'GET /repos/{owner}/{repo}/pulls/{pull_number}',
     {
