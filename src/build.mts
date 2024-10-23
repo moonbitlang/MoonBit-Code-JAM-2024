@@ -80,9 +80,8 @@ function getPrNumber(teamName: string): number {
   const commit = $`git log --format=%H teams/${teamName}/${latestFile}`.split(
     '\n',
   )[0]
-  const oldestMergeCommit = $`git rev-list --merges ${commit}^..HEAD`.split(
-    '\n',
-  )[0]
+  const oldestMergeCommit =
+    $`git rev-list --reverse --merges ${commit}^..HEAD`.split('\n')[0]
   const mergeCommitMessage = $`git log --format=%B -n 1 ${oldestMergeCommit}`
   const title = mergeCommitMessage.split('\n')[0]
   const prNumber = title.match(/Merge pull request #(\d+)/)?.[1]
