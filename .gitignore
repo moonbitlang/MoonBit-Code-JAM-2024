@@ -2,3 +2,4 @@
 node_modules
 meta.json
 test.mts
+.DS_Store
