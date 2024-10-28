@@ -28,28 +28,20 @@ function githubBtn(
   </iframe>`
 }
 
-fs.rmSync('dist', { recursive: true, force: true })
-fs.mkdirSync('dist')
-
-async function getPRInfo(teamName: string) {
-  const prNumber = getPrNumber(teamName)
-  const res = await ghClient.request(
-    'GET /repos/{owner}/{repo}/pulls/{pull_number}',
-    {
+async function getPRInfo(prNumber: number) {
+  return (
+    await ghClient.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
       owner: 'moonbitlang',
       repo: 'MoonBit-Code-JAM-2024',
       pull_number: prNumber,
       headers: {
         'X-GitHub-Api-Version': '2022-11-28',
       },
-    },
-  )
-
-  return res.data
+    })
+  ).data
 }
 
 type MetaInfo = {
-  teamName: string
   title?: string
   control?: string
   readme?: string
@@ -57,94 +49,88 @@ type MetaInfo = {
   prInfo: Awaited<ReturnType<typeof getPRInfo>>
 }
 
-function $(strings: TemplateStringsArray, ...args: string[]): string {
-  const command = strings.reduce(
-    (prev, current, i) => prev + args[i - 1] + current,
-  )
-  return cp.execSync(command).toString().trim()
-}
+const metaInfos = new Map<string, MetaInfo>()
 
-function getPrNumber(teamName: string): number {
-  const files = fs
-    .readdirSync(`teams/${teamName}`, { withFileTypes: true })
-    .filter(d => d.isFile())
-    .map(d => d.name)
+async function collectMetaInfos(): Promise<void> {
+  const pulls = await ghClient.request('GET /repos/{owner}/{repo}/pulls', {
+    state: 'closed',
+    owner: 'moonbitlang',
+    repo: 'MoonBit-Code-JAM-2024',
+    headers: {
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  })
 
-  const latestFile = files.sort((a, b) => {
-    const aTime = fs.statSync(`teams/${teamName}/${a}`).ctimeMs
-    const bTime = fs.statSync(`teams/${teamName}/${b}`).ctimeMs
-    return bTime - aTime
-  })[0]
+  for (const pull of pulls.data) {
+    const pull_number = pull.number
+    const files = await ghClient.request(
+      'GET /repos/{owner}/{repo}/pulls/{pull_number}/files',
+      {
+        owner: 'moonbitlang',
+        repo: 'MoonBit-Code-JAM-2024',
+        pull_number,
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      },
+    )
+    for (const file of files.data) {
+      const [teams, teamName, name] = file.filename.split('/', 3)
+      if (teams === 'teams' && name === 'game.wasm') {
+        if (metaInfos.has(teamName)) {
+          break
+        }
+        if (!fs.existsSync(`teams/${teamName}`)) {
+          break
+        }
+        const prInfo = await getPRInfo(pull_number)
+        const metaInfo: MetaInfo = {
+          prInfo,
+          cover: false,
+        }
 
-  const commit = $`git log --format=%H teams/${teamName}/${latestFile}`.split(
-    '\n',
-  )[0]
-  const oldestMergeCommit =
-    $`git rev-list --reverse --merges ${commit}^..HEAD`.split('\n')[0]
-  const mergeCommitMessage = $`git log --format=%B -n 1 ${oldestMergeCommit}`
-  const title = mergeCommitMessage.split('\n')[0]
-  const prNumber = title.match(/Merge pull request #(\d+)/)?.[1]
-  if (prNumber === undefined) {
-    throw new Error('No PR number found')
-  }
-  return Number(prNumber)
-}
+        const files = fs
+          .readdirSync(`teams/${teamName}`, { withFileTypes: true })
+          .filter(d => d.isFile())
+          .map(d => d.name)
 
-async function collectMetaInfo(teamName: string): Promise<MetaInfo> {
-  const prInfo = process.env.DEV
-    ? JSON.parse(fs.readFileSync('dev/data.json', 'utf8'))
-    : await getPRInfo(teamName)
+        for (const file of files) {
+          const read = (file: string): string =>
+            fs.readFileSync(`teams/${teamName}/${file}`, 'utf8')
+          switch (file) {
+            case 'cover.png': {
+              metaInfo.cover = true
+              continue
+            }
+            case 'README.md': {
+              metaInfo.readme = read(file)
+              continue
+            }
+            case 'title': {
+              metaInfo.title = read(file)
+              continue
+            }
+            case 'control': {
+              metaInfo.control = read(file)
+              continue
+            }
+          }
+        }
 
-  const metaInfo: MetaInfo = {
-    teamName,
-    cover: false,
-    prInfo,
-  }
-
-  const files = fs
-    .readdirSync(`teams/${teamName}`, { withFileTypes: true })
-    .filter(d => d.isFile())
-    .map(d => d.name)
-
-  for (const file of files) {
-    const read = (file: string): string =>
-      fs.readFileSync(`teams/${teamName}/${file}`, 'utf8')
-    switch (file) {
-      case 'cover.png': {
-        metaInfo.cover = true
-        continue
-      }
-      case 'README.md': {
-        metaInfo.readme = read(file)
-        continue
-      }
-      case 'title': {
-        metaInfo.title = read(file)
-        continue
-      }
-      case 'control': {
-        metaInfo.control = read(file)
-        continue
+        console.log(`metainfo of ${teamName}:`, metaInfo)
+        metaInfos.set(teamName, metaInfo)
+        break
       }
     }
   }
-
-  return metaInfo
 }
 
-const teamNames = fs
-  .readdirSync('teams', { withFileTypes: true })
-  .filter(d => d.isDirectory())
-  .map(d => d.name)
-
-const metaInfos = await Promise.all(teamNames.map(collectMetaInfo))
-
-function renderGameCard(metaInfo: MetaInfo): string {
+function renderGameCard(teamName: string, metaInfo: MetaInfo): string {
   const coverPath = metaInfo.cover
-    ? `${querystring.escape(metaInfo.teamName)}/cover.png`
+    ? `${querystring.escape(teamName)}/cover.png`
     : 'default-cover.png'
 
-  const teamPath = querystring.escape(metaInfo.teamName)
+  const teamPath = querystring.escape(teamName)
   const authorName = metaInfo.prInfo.head.user.login
   const repoName = metaInfo.prInfo.head.repo?.name
 
@@ -153,8 +139,8 @@ function renderGameCard(metaInfo: MetaInfo): string {
   }
 
   const footer = metaInfo.title
-    ? `<h2>${metaInfo.title}</h2><p>${metaInfo.teamName}</p>`
-    : `<p>${metaInfo.teamName}</p>`
+    ? `<h2>${metaInfo.title}</h2><p>${teamName}</p>`
+    : `<p>${teamName}</p>`
 
   return /*html*/ `
 <div class='game-card'>
@@ -173,8 +159,10 @@ function renderGameCard(metaInfo: MetaInfo): string {
 `.trim()
 }
 
-function indexHtml(metaInfos: MetaInfo[]): string {
-  const gameCards = metaInfos.map(renderGameCard).join('\n')
+function indexHtml(): string {
+  const gameCards = [...metaInfos.entries()]
+    .map(e => renderGameCard(...e))
+    .join('\n')
 
   return /*html*/ `
 <!DOCTYPE html>
@@ -336,8 +324,8 @@ function indexHtml(metaInfos: MetaInfo[]): string {
 `
 }
 
-function gameIndexHtml(metaInfo: MetaInfo): string {
-  const title = metaInfo.title ?? metaInfo.teamName
+function gameIndexHtml(teamName: string, metaInfo: MetaInfo): string {
+  const title = metaInfo.title ?? teamName
   const control = metaInfo.control ?? ''
   const readme = metaInfo.readme ? md.render(metaInfo.readme) : ''
   const authorName = metaInfo.prInfo.head.user.login
@@ -521,17 +509,20 @@ function copyWasm4(dist: string) {
   }
 }
 
-fs.writeFileSync('dist/index.html', indexHtml(metaInfos))
+fs.rmSync('dist', { recursive: true, force: true })
+fs.mkdirSync('dist')
+await collectMetaInfos()
+fs.writeFileSync('dist/index.html', indexHtml())
 fs.copyFileSync('assets/default-cover.png', 'dist/default-cover.png')
-for (const metaInfo of metaInfos) {
-  const gameIndex = gameIndexHtml(metaInfo)
-  fs.mkdirSync(`dist/${metaInfo.teamName}`)
-  copyWasm4(metaInfo.teamName)
-  for (const file of fs.readdirSync(`teams/${metaInfo.teamName}`)) {
+for (const [teamName, metaInfo] of metaInfos) {
+  const gameIndex = gameIndexHtml(teamName, metaInfo)
+  fs.mkdirSync(`dist/${teamName}`)
+  copyWasm4(teamName)
+  for (const file of fs.readdirSync(`teams/${teamName}`)) {
     fs.copyFileSync(
-      `teams/${metaInfo.teamName}/${file}`,
-      `dist/${metaInfo.teamName}/${file === 'game.wasm' ? 'cart.wasm' : file}`,
+      `teams/${teamName}/${file}`,
+      `dist/${teamName}/${file === 'game.wasm' ? 'cart.wasm' : file}`,
     )
   }
-  fs.writeFileSync(`dist/${metaInfo.teamName}/index.html`, gameIndex)
+  fs.writeFileSync(`dist/${teamName}/index.html`, gameIndex)
 }
