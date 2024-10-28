@@ -24,7 +24,7 @@ function githubBtn(
     authorName,
   )}&repo=${querystring.escape(repoName)}&type=star&count=true${
     large && '&size=large'
-  }" frameborder="0" scrolling="0" width="115" height="32" title="GitHub">
+  }" frameborder="0" scrolling="0" width="140" height="32" title="GitHub">
   </iframe>`
 }
 
