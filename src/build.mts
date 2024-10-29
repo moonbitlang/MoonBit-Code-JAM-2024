@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import cp from 'node:child_process'
 import querystring from 'node:querystring'
 import markdownit from 'markdown-it'
 import * as octokit from 'octokit'
@@ -51,17 +50,39 @@ type MetaInfo = {
 
 const metaInfos = new Map<string, MetaInfo>()
 
-async function collectMetaInfos(): Promise<void> {
-  const pulls = await ghClient.request('GET /repos/{owner}/{repo}/pulls', {
+async function getPulls() {
+  return await ghClient.request('GET /repos/{owner}/{repo}/pulls', {
     state: 'closed',
     owner: 'moonbitlang',
     repo: 'MoonBit-Code-JAM-2024',
+    per_page: 100,
     headers: {
       'X-GitHub-Api-Version': '2022-11-28',
     },
   })
+}
 
-  for (const pull of pulls.data) {
+async function allPrs() {
+  const pulls: Awaited<ReturnType<typeof getPulls>>['data'] = []
+  let pagesRemaining = true
+  while (pagesRemaining) {
+    const res = await ghClient.request('GET /repos/{owner}/{repo}/pulls', {
+      state: 'closed',
+      owner: 'moonbitlang',
+      repo: 'MoonBit-Code-JAM-2024',
+      per_page: 100,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    })
+    pulls.push(...res.data)
+  }
+  return pulls
+}
+
+async function collectMetaInfos(): Promise<void> {
+  const pulls = await allPrs()
+  for (const pull of pulls) {
     const pull_number = pull.number
     const files = await ghClient.request(
       'GET /repos/{owner}/{repo}/pulls/{pull_number}/files',
