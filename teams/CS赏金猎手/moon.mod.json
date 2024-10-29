@@ -1,0 +1,13 @@
+{
+  "name": "Spaceack/TicTacToe",
+  "version": "0.1.1",
+  "deps": {
+    "moonbitlang/wasm4": "0.2.2"
+  },
+  "readme": "README.md",
+  "repository": "",
+  "license": "Apache-2.0",
+  "keywords": [],
+  "description": "",
+  "source": "src"
+}
