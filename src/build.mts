@@ -536,11 +536,25 @@ for (const [teamName, metaInfo] of metaInfos) {
   const gameIndex = gameIndexHtml(teamName, metaInfo)
   fs.mkdirSync(`dist/${teamName}`)
   copyWasm4(teamName)
-  for (const file of fs.readdirSync(`teams/${teamName}`)) {
-    fs.copyFileSync(
-      `teams/${teamName}/${file}`,
-      `dist/${teamName}/${file === 'game.wasm' ? 'cart.wasm' : file}`,
-    )
+  for (const dirent of fs.readdirSync(`teams/${teamName}`, {
+    withFileTypes: true,
+  })) {
+    if (dirent.isDirectory()) {
+      fs.cpSync(
+        `teams/${teamName}/${dirent.name}`,
+        `dist/${teamName}/${dirent.name}`,
+        {
+          recursive: true,
+        },
+      )
+    } else {
+      fs.copyFileSync(
+        `teams/${teamName}/${dirent.name}`,
+        `dist/${teamName}/${
+          dirent.name === 'game.wasm' ? 'cart.wasm' : dirent.name
+        }`,
+      )
+    }
   }
   fs.writeFileSync(`dist/${teamName}/index.html`, gameIndex)
 }
