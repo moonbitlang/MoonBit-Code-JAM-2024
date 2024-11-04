@@ -137,7 +137,6 @@ async function collectMetaInfos(): Promise<void> {
 
         console.log(`metainfo of ${teamName}:`, metaInfo)
         metaInfos.set(teamName, metaInfo)
-        break
       }
     }
   }
