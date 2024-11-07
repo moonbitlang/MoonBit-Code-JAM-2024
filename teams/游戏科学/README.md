@@ -3,7 +3,7 @@
 ## 简介
 
 “KunKun 接鸡蛋”这个游戏的目标是通过控制角色“KunKun”接住掉落的鸡蛋，以获得高分。游戏采用了简单的像素风格，类似于经典的小游戏。 
-<center><img src="./cover.png" alt="cover" style="zoom:66.6%;" /></center>
+<center><img src="./cover.png" alt="cover - Kun Kun playing basketball" style="zoom:66.6%;" /></center>
 
 ## 游戏规则
 
@@ -17,18 +17,23 @@
 
 #### KunKun
 
-![mie](./resource/kunkun.png)  
+![robot character](./resource/kunkun.png)  
 KunKun 的设计风格简洁、可爱，可能是一个专门用来接鸡蛋的角色。这个形象容易让人联想到经典的像素游戏角色，简洁的设计有助于在小屏幕上清晰呈现角色的动作与状态。
 
 #### 鸡蛋
-![mie](./resource/egg.png)  
+![egg](./resource/egg.png)  
 鸡蛋可能是游戏的主要目标物，玩家需要帮助 KunKun 接住尽可能多的鸡蛋来获得高分。鸡蛋的设计也可能非常简约，是一个小的椭圆形，以便在屏幕上清晰可见。
 
 ## TODO
 
-- [ ] 添加 GPT AI
-- [ ] 添加障碍物
-- [ ] 添加 KunKun 技能(shift加速)
-- [ ] 添加 KunKun 升级
-- [ ] 添加 KunKun 皮肤
-- [ ] 添加关卡体验(难度-角色体积)
+- [] 添加 GPT AI
+
+- [] 添加障碍物
+
+- [] 添加 KunKun 技能(shift加速)
+
+- [] 添加 KunKun 升级
+
+- [] 添加 KunKun 皮肤
+
+- [] 添加关卡体验(难度-角色体积)
