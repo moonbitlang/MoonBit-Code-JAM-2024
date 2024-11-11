@@ -211,6 +211,12 @@ pub fn game_start(self : GameStat) -> Unit {
   } else if butRel(gp1.button_down, prevgp1.button_down) {
     moveDown(self)
   } else if butRel(gp1.button_1, prevgp1.button_1) {
+    @wasm4.tone(
+      (300, 20),
+      @wasm4.ADSR::new(4),
+      @wasm4.ADSRVolume::new(80),
+      @wasm4.ToneFlag::new(channel=@wasm4.ToneChannel::Triangle),
+    )
     let x = self.player_x
     let y = self.player_y
     if self.gamemap[x][y] == '0' {
