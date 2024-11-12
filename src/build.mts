@@ -50,35 +50,36 @@ type MetaInfo = {
 
 const metaInfos = new Map<string, MetaInfo>()
 
-async function getPulls() {
+async function getPulls(page: number) {
   return await ghClient.request('GET /repos/{owner}/{repo}/pulls', {
     state: 'closed',
     owner: 'moonbitlang',
     repo: 'MoonBit-Code-JAM-2024',
     per_page: 100,
+    page,
     headers: {
       'X-GitHub-Api-Version': '2022-11-28',
     },
   })
 }
 
-async function allPrs() {
+async function allPulls() {
+  let pagesRemaining = true
   const pulls: Awaited<ReturnType<typeof getPulls>>['data'] = []
-  const res = await ghClient.request('GET /repos/{owner}/{repo}/pulls', {
-    state: 'closed',
-    owner: 'moonbitlang',
-    repo: 'MoonBit-Code-JAM-2024',
-    per_page: 100,
-    headers: {
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-  })
-  pulls.push(...res.data)
+  let page = 1
+  while (pagesRemaining) {
+    const res = await getPulls(page)
+    pulls.push(...res.data)
+
+    const linkHeader = res.headers.link
+    pagesRemaining = linkHeader?.includes(`rel=\"next\"`) ?? false
+    page++
+  }
   return pulls
 }
 
 async function collectMetaInfos(): Promise<void> {
-  const pulls = await allPrs()
+  const pulls = await allPulls()
   for (const pull of pulls) {
     const pull_number = pull.number
     const files = await ghClient.request(
