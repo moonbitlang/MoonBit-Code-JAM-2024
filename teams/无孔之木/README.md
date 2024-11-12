@@ -23,3 +23,7 @@
 如果你得到密码可以选择第四个关卡，选择密码，也是空格键选择密码，z键确认你给的密码，![alt text](10.png)，进入以后，可以自行探索，找到那封信寻得宝石即是胜利。
 如果乱猜误认陷阱，宝石会过来吞噬你，那就自求多福，空格键是剑，z键是子弹。如果你活了下来，会直接到新家（dao men home），当然那个门进去了
 再也不会有事了，因为会直接回来；如果你选择正确密码但还是误入门的话，那就是你运气不好，同样的操作方法自救吧。![alt text](11.png)
+
+#b站游戏视频链接：【异世界宝石游戏案例----基于moonbit编程下的wasm4引擎】https://www.bilibili.com/video/BV1Fcm8YrEt5?vd_source=60bf5577572b6b3a96870f2108aaea97
+#csdn链接：https://blog.csdn.net/sharp_ze/article/details/143700233?spm=1001.2014.3001.5502
+#csdn链接：https://blog.csdn.net/sharp_ze/article/details/143700956?spm=1001.2014.3001.5502
