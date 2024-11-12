@@ -13,4 +13,5 @@
 csdn平台：https://blog.csdn.net/m0_61243965/article/details/143510089
 知乎平台：https://zhuanlan.zhihu.com/p/5235638036
 b站平台：https://www.bilibili.com/opus/996524148885815335
+微信公众号：https://mp.weixin.qq.com/s?__biz=Mzk0MTQ3MDU4Mg==&mid=2247501801&idx=1&sn=570878c05b36be1db1e68826e62d2789&chksm=c2d361f0f5a4e8e68de2d48c99a5cd9d02fe85910acfd401f3fa61c3e17fed10fb32b79e7adc&scene=21#wechat_redirect
 
