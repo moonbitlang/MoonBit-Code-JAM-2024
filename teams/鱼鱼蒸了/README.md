@@ -18,6 +18,9 @@
 
 你也可以通过走位避开当前的战斗,代价是低等级进入后面的战斗,每次战斗的血量都会保留  
 
+或者可以通过拾取地图上的礼物盒恢复血量,不过也会清除该列的敌人  
+<center><img src="./resource/gift.png" alt="cover" style="zoom:50%;" /></center>  
+
 目前只有与咩咩的战斗(AI见敌人图鉴)  
 <center><img src="./resource/fight.png" alt="cover" style="zoom:50%;" /></center>  
 进入战斗后最上方为当前经验值与当前等级     
@@ -31,8 +34,14 @@
 - Fight: 攻击敌人,目前是`level*10`点力量  
 - Heal: 治疗自己,目前是恒定恢复10点血量,且不会超过最大血量
 - Defense: 防御,下回合被攻击时伤害恒定为1 
-当任意一方选择防御时,血条旁边会有一个小盾牌的标识   
 
+<center><img src="./resource/choice.png" alt="cover" style="zoom:50%;" /></center> 
+当选择攻击时,底下会出现攻击区,需要按x来停下竖条,并根据竖条停在的区域来增加伤害
+- 中心 : 5*level
+- 中心两旁: 3*level
+- 两侧: 1*level
+
+当任意一方选择防御时,血条旁边会有一个小盾牌的标识   
 <center><img src="./resource/defence.png" alt="cover" style="zoom:50%;" /></center>  
 
 当敌人进行攻击时,菜单栏会变成小游戏的形式(设计参考了UnderTale)  
@@ -52,12 +61,29 @@
 ![mie](./resource/sheep.png)  
 很可爱的咩咩,但因为你在冲撞路线上了,所以它很生气
 
-血量: 10*level  
+血量: 5*level  
 攻击: 
 - 咩咩冲击: 3*level点伤害,5%概率暴击,3级后概率翻倍   
 
 防御: 每2次攻击后进行防御    
 治疗: 无
+
+## 小游戏
+
+目前实现两种
+
+### 避开柱子
+
+<center><img src="./resource/attack.png" alt="cover" style="zoom:50%;" /></center>  
+柱子会从左右两侧往反方向运动,你只需要通过操纵小人避开就好(参考骨头)  
+每次的数量都是随机的
+
+### 挡球
+
+<center><img src="./resource/ball.png" alt="cover" style="zoom:50%;" /></center>  
+球会从两侧出现,你需要通过左右键来接住所有的球  
+球的数量都是随机的
+
 
 ## 墓前进度
 
