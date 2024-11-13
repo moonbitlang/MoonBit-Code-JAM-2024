@@ -48,3 +48,8 @@
 
 火箭：获取后武器变为火箭弹，威力更大，弹道更快。
 
+## 更多
+
+[通关流程视频](https://www.bilibili.com/video/BV18gm2YzEVx)
+
+[相关博客-游戏设计和实现](https://milky2018.github.io/2024/11/12/Tankle-Adventure%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0%E6%B5%85%E8%B0%88/)
