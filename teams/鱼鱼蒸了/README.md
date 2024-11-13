@@ -68,9 +68,21 @@
 防御: 每2次攻击后进行防御    
 治疗: 无
 
+![pkin](./resource/pumpkin.png)  
+罪魁祸首南瓜王,需要你打败它来拯救世界
+
+血量: 108  
+攻击: 根据玩家的等级动态伤害 
+防御: 无   
+治疗: 第一次降至56血后恢复至100血
+特殊: 
+- 当玩家等级不是19级时,南瓜王累积攻击13次会直接失败
+- 玩家攻击南瓜王固定为10,当等级够高时伤害为增加
+- 当玩家等级为19时,每次只能造成3点伤害,且小游戏速度加快,南瓜王固定造成大量伤害  
+
 ## 小游戏
 
-目前实现两种
+目前有两种
 
 ### 避开柱子
 
@@ -85,21 +97,31 @@
 球的数量都是随机的
 
 
-## 墓前进度
-
-基本的战斗逻辑与UI
 
 ## 彩蛋?
 
 在战斗界面使用Konami代码可以直接满级`up up down down left right left right z x`
+但也会加大之后的战斗难度  
+  
+## 其他
 
-## TODO
+本游戏由[FrenchPicnic](https://github.com/FrenchPicnic)一人开发
 
-- [x] 添加敌人
-- [ ] 添加更多敌人AI
-- [ ] 不同的敌人属性
-- [ ] 不同的敌人技能
-- [x] 添加人物升级与属性提升
-- [x] 添加大世界
-- [x] 美化游戏画面(菜单栏/人物模型/血条等)
-- [x] 加入一些神秘的小游戏,充当肉鸽中的惊喜选项
+代码仓库: https://github.com/FrenchPicnic/MoonbitWasm4
+
+博客: https://frenchpicnic.github.io/posts/201cd6df/
+
+视频链接: 
+
+## 鸣谢
+
+游戏灵感来源: [UnderTale](https://undertale.com/)
+
+游戏素材来源:  
+以下素材来源均可直接商用  
+
+[人物形象](https://dotown.maeda-design-room.net/)
+
+[攻击动画](https://pixlab24.com/character/27243/)
+
+首页城堡使用了AI初次绘制,手动二次加工
