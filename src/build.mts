@@ -97,10 +97,10 @@ async function collectMetaInfos(): Promise<void> {
       const [teams, teamName, name] = file.filename.split('/', 3)
       if (teams === 'teams' && name === 'game.wasm') {
         if (metaInfos.has(teamName)) {
-          break
+          continue
         }
         if (!fs.existsSync(`teams/${teamName}`)) {
-          break
+          continue
         }
         const prInfo = await getPRInfo(pull_number)
         const metaInfo: MetaInfo = {
