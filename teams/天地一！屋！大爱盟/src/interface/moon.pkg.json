@@ -1,0 +1,7 @@
+{
+  "import": [
+    "moonbitlang/wasm4",
+	  {"path": "GAME/antity","alias": "antity"},
+	  "GAME/time_cnt"
+  ]
+}
