@@ -7,8 +7,9 @@
 将世界复原，找寻回家的路吧。
 
 
-
-
+### 联动投稿
+Bilibili ：   https://www.bilibili.com/video/BV1RbU5YFEsz/?spm_id_from=333.337.search-card.all.click&vd_source=8bd282cd871de255ec0d0c55ee199e89
+CSDN ：https://blog.csdn.net/CielaAr/article/details/143752032?spm=1001.2014.3001.5502
 # 游戏部分场景展示
 ## 封面：
 
