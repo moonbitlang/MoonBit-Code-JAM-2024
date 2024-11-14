@@ -1,6 +1,6 @@
 # 月兔传说（(The Legend Of Moonbit)）
 
-
+[2024 MoonBit 全球编程创新挑战赛 Game Jam：月兔传说（(The Legend Of Moonbit)）作品展示](https://www.bilibili.com/video/BV1PMU5YyEqH/?vd_source=cf756c457eb82c05c7c90fd3cf55dc19)
 
 ## ----故事-----
 ### 背景
@@ -67,9 +67,10 @@
 
 
 
+
 ## TODO
 
 [x] 第一章：BUG来袭
-[] 第二章：寻回记忆
-[] 第三章：梦想实现
-[] 最终章：兔月传说
+[ ] 第二章：寻回记忆
+[ ] 第三章：梦想实现
+[ ] 最终章：兔月传说
