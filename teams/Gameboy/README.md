@@ -1,5 +1,7 @@
 # Moonbit
 错乱时空乱斗
+本游戏配乐，写代码，美术均由我自己完成
+哔站宣传视频：https://www.bilibili.com/video/BV1KiUKYWE5L?vd_source=1e2494ff2eae0eacf6f94392188aa18c
 P1:<-和->控制左右方向移动,x攻击，z技能
 P2:S和F控制左右方向移动,A攻击，tab技能
 菜单选择界面用上键选择Z确定
