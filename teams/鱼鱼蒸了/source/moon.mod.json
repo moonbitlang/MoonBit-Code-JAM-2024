@@ -1,0 +1,13 @@
+{
+  "name": "frenchpicnic/wasm",
+  "version": "0.1.0",
+  "deps": {
+    "moonbitlang/wasm4": "0.2.2"
+  },
+  "readme": "README.md",
+  "repository": "",
+  "license": "MIT License",
+  "keywords": [],
+  "description": "",
+  "source": "src"
+}

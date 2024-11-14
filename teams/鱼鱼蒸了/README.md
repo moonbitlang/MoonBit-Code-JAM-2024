@@ -125,3 +125,18 @@
 [攻击动画](https://pixlab24.com/character/27243/)
 
 首页城堡使用了AI初次绘制,手动二次加工
+
+## 源代码
+
+参考source文件夹下的src/lib  
+
+运行`moon version --all`后输出如下
+```
+moon 0.1.20241111 (e6d64e0 2024-11-11) ~\.moon\bin\moon.exe
+moonc v0.1.20241111+dc2407357 ~\.moon\bin\moonc.exe
+moonrun 0.1.20241111 (e6d64e0 2024-11-11) ~\.moon\bin\moonrun.exe
+```
+
+## License
+
+MIT License
