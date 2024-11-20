@@ -1,5 +1,7 @@
 ## Lindenmayer模拟器（L-System Emulator）
 
+[2024 MoonBit 全球编程创新挑战赛 Game Jam：L-system trees分形树作品展示](https://www.bilibili.com/video/BV1GJmpYLE8L/)
+
 ## 介绍
 L-System模拟器，一款关于`探索`与`发现`的`图形艺术`游戏，通过调整参数，探索参数与图形特点的相关性。
 
