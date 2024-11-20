@@ -48,7 +48,7 @@ fn update_level(self : Player) -> Unit {
         }
       }
       game.current_room = generate_room(game.level)
-      game.pause_cd = CD::new(50 + game.level / 3 * 5, 1)
+      game.pause_cd = CD::new(50 + game.level / 5 * 5, 1)
     }
     None => ()
   }
