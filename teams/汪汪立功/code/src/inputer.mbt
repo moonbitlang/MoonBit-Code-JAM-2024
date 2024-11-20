@@ -2,16 +2,16 @@ fn inputer(player : Player) -> Unit {
   let gamepad = @wasm4.get_gamepad()
   let mouse = @wasm4.get_mouse()
   if gamepad.button_up {
-    player.move(Up)
+    player.move_(Up)
   }
   if gamepad.button_down {
-    player.move(Down)
+    player.move_(Down)
   }
   if gamepad.button_left {
-    player.move(Left)
+    player.move_(Left)
   }
   if gamepad.button_right {
-    player.move(Right)
+    player.move_(Right)
   }
   if mouse.left && player.weapon.get_cd().check() {
     player.weapon.attack(player.pos, game.current_room, mouse.x, mouse.y)

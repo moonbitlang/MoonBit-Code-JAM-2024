@@ -44,7 +44,6 @@ fn render_start_room() -> Unit {
 fn render_background_normal() -> Unit {
   render_background()
   set_main_color_with_transparent(Black)
-  @wasm4.rect(22, 22, 116, 116) // patch backgroud
 }
 
 fn render_background() -> Unit {

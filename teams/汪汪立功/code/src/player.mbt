@@ -39,7 +39,7 @@ fn get_hitbox_player(self : Position) -> Shape {
   Rect(self.x - 5, self.y - 5, self.x + 5, self.y + 5)
 }
 
-fn move(self : Player, direction : Direction) -> Unit {
+fn move_(self : Player, direction : Direction) -> Unit {
   match direction {
     Up => self.apply({ x: self.pos.x, y: self.pos.y - speed.to_double() })
     Down => self.apply({ x: self.pos.x, y: self.pos.y + speed.to_double() })

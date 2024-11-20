@@ -35,21 +35,21 @@ fn update_level(self : Player) -> Unit {
     }
     Some(Left) => {
       if game.current_room.upgrade {
-        let level = self.slingshot.level
-        self.slingshot = Slingshot::new(level + 1)
-      }
-      game.level += 1
-      game.current_room = generate_room(game.level)
-      self.pos = { x: 126, y: 73 }
-    }
-    Some(Right) => {
-      if game.current_room.upgrade {
         let level = self.sword.level
         self.sword = Sword::new(level + 1)
       }
       game.level += 1
       game.current_room = generate_room(game.level)
       self.pos = { x: 76, y: 30 }
+    }
+    Some(Right) => {
+      if game.current_room.upgrade {
+        let level = self.slingshot.level
+        self.slingshot = Slingshot::new(level + 1)
+      }
+      game.level += 1
+      game.current_room = generate_room(game.level)
+      self.pos = { x: 126, y: 73 }
     }
     None => ()
   }

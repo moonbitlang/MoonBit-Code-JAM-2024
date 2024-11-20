@@ -17,7 +17,7 @@ fn to_int(self : Color_Type) -> UInt {
 }
 
 fn set_draw_color(index : UInt, color_type : Color_Type) -> Unit {
-  @wasm4.set_draw_colors(~index, color_type.to_int())
+  @wasm4.set_draw_colors(index~, color_type.to_int())
 }
 
 fn set_main_color_with_transparent(color_type : Color_Type) -> Unit {

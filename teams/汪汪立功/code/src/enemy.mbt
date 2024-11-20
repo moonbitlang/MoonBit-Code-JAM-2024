@@ -28,7 +28,7 @@ fn get_id(self : Enemy) -> UInt {
   }
 }
 
-fn get_hitbox(self : Enemy, ~pos : Position = self.get_pos()) -> Shape {
+fn get_hitbox(self : Enemy, pos~ : Position = self.get_pos()) -> Shape {
   match self {
     Mummy(_) => pos.get_hitbox_mummy()
     Skeleton(_) => pos.get_hitbox_skeleton()
@@ -88,7 +88,7 @@ fn set_pos(self : Enemy, pos : Position) -> Unit {
 }
 
 fn apply(self : Enemy, pos : Position) -> Unit {
-  let hitbox = self.get_hitbox(~pos)
+  let hitbox = self.get_hitbox(pos~)
   if game.current_room.move_hitbox().shape_in_box(hitbox).not() &&
     game.player.pos.get_hitbox_player().intersect(hitbox).not() {
     self.set_pos(pos)
