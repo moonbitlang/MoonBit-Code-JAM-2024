@@ -57,7 +57,7 @@ fn generate_arrow(
 fn update_arrow(self : Room) -> Unit {
   let erase_list : Array[UInt] = []
   for id, arrow in self.arrows {
-    let hitbox = get_hitbox_f(arrow.pos,2.5)
+    let hitbox = get_hitbox_f(arrow.pos, 2.5)
     let mut flag = false
     if game.current_room.arrow_walls.shape_in_box(hitbox) {
       erase_list.push(id)
@@ -74,7 +74,7 @@ fn update_arrow(self : Room) -> Unit {
         flag = true
       }
       for _, enemy in self.enemys {
-        if get_hitbox_f(enemy.pos,5).intersect(hitbox) {
+        if get_hitbox_f(enemy.pos, 5).intersect(hitbox) {
           enemy.hp -= arrow.damage
           music_damage()
           erase_list.push(id)

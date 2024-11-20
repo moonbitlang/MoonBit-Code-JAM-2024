@@ -23,6 +23,7 @@ fn Room::new(upgrade : Bool, start : Bool) -> Room {
     start,
   }
 }
+
 fn update_room(self : Room) -> Unit {
   if self.stop.not() {
     set_main_color_with_transparent(LightBrown)

@@ -15,7 +15,7 @@ fn distance(self : Position, other : Position) -> Float {
   (self.y - other.y) * (self.y - other.y)).sqrt()
 }
 
-fn get_hitbox_f(self:Position,f:Float) -> Shape {
+fn get_hitbox_f(self : Position, f : Float) -> Shape {
   Rect(self.x - f, self.y - f, self.x + f, self.y + f)
 }
 

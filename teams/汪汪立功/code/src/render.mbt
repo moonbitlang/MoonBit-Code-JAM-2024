@@ -3,8 +3,7 @@ fn render(room : Room, player : Player) -> Unit {
   if room.upgrade {
     set_main_color_with_transparent(LightBrown)
     render_upgrade_room()
-  }
-  else if room.start {
+  } else if room.start {
     set_main_color_with_transparent(LightBrown)
     render_start_room()
   }
@@ -51,5 +50,5 @@ fn render_background() -> Unit {
   set_draw_color(2, Brown)
   set_draw_color(3, Grey)
   set_draw_color(4, Black)
-  map_texture.render_texture(0,0)
+  map_texture.render_texture(0, 0)
 }
