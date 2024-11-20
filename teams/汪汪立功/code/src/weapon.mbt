@@ -48,14 +48,16 @@ struct Sword {
   damage : Int
   range : Int
   cd : CD
+  repel : Int
 }
 
 fn Sword::new(level : Int) -> Sword {
   {
     level,
-    damage: 10 + level * 10,
-    range: 5 + level / 4,
+    damage: 10 + level * 8,
+    range: 6 + level / 4,
     cd: CD::new(100, 10 + level / 5),
+    repel: 2 + level / 4,
   }
 }
 
@@ -64,8 +66,8 @@ fn sword_determine_direction(
   mouse_y : Int,
   pos : Position
 ) -> Direction {
-  let dx = mouse_x.to_double() - pos.x
-  let dy = mouse_y.to_double() - pos.y
+  let dx = mouse_x.to_float() - pos.x
+  let dy = mouse_y.to_float() - pos.y
   if dy < 0 && dx.abs() < dy.abs() {
     Up
   } else if dy > 0 && dx.abs() < dy.abs() {
@@ -82,7 +84,7 @@ fn sword_generate_attack_hitbox(
   sword : Sword,
   pos : Position
 ) -> Shape {
-  let range = sword.range.to_double()
+  let range = sword.range.to_float()
   match self {
     Left => Rect(pos.x - 5 - range, pos.y - 5, pos.x - 5, pos.y)
     Right => Rect(pos.x, pos.y - 5, pos.x + 5 + range, pos.y + 5)
@@ -100,11 +102,12 @@ fn sword_attack(
 ) -> Unit {
   for _, enemy in room.enemys {
     let { damage, .. } = self
-    let hitbox = sword_determine_direction(mouse_x, mouse_y, pos).sword_generate_attack_hitbox(
-      self, pos,
-    )
-    if hitbox.intersect(enemy.get_hitbox()) {
-      enemy.damage(damage)
+    let direction = sword_determine_direction(mouse_x, mouse_y, pos)
+    let hitbox = direction.sword_generate_attack_hitbox(self, pos)
+    if hitbox.intersect(get_hitbox_f(enemy.pos, 5)) {
+      enemy.hp -= damage
+      music_damage()
+      enemy.repel(direction, self.repel)
     }
   }
   self.cd.refersh()
@@ -113,7 +116,7 @@ fn sword_attack(
 struct Slingshot {
   level : Int
   damage : Int
-  speed : Double
+  speed : Float
   cd : CD
 }
 
@@ -121,7 +124,7 @@ fn Slingshot::new(level : Int) -> Slingshot {
   {
     level,
     damage: 8 + level * 2,
-    speed: 0.5 + 0.2 * level.to_double(),
+    speed: 0.5.to_float() + 0.2.to_float() * level.to_float(),
     cd: CD::new(100, 2 + level / 3 * 2),
   }
 }
@@ -135,7 +138,7 @@ fn slingshot_attack(
 ) -> Unit {
   let (id, arrow) = generate_arrow(
     pos,
-    { x: mouse_x.to_double(), y: mouse_y.to_double() },
+    { x: mouse_x.to_float(), y: mouse_y.to_float() },
     self.speed,
     self.damage,
     false,

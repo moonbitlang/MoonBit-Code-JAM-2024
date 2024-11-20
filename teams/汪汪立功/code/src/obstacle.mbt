@@ -6,9 +6,9 @@ enum Obstacle {
 fn get_obstacle_hitbox(self : Obstacle) -> Shape {
   match self {
     Jar(x, y) =>
-      Rect(x.to_double(), y.to_double(), x.to_double() + 12, y.to_double() + 12)
+      Rect(x.to_float(), y.to_float(), x.to_float() + 12, y.to_float() + 12)
     Tombstone(x, y) =>
-      Rect(x.to_double(), y.to_double(), x.to_double() + 7, y.to_double() + 13)
+      Rect(x.to_float(), y.to_float(), x.to_float() + 7, y.to_float() + 13)
   }
 }
 

@@ -23,23 +23,13 @@ fn Room::new(upgrade : Bool, start : Bool) -> Room {
     start,
   }
 }
-
-fn patch_out(direction : Direction) -> Unit {
-  set_main_color_with_transparent(LightBrown)
-  match direction {
-    Up => @wasm4.rect(71, 4, 15, 18)
-    Down => @wasm4.rect(72, 138, 15, 18) // need to fix
-    Left => @wasm4.rect(4, 72, 18, 15)
-    Right => @wasm4.rect(138, 72, 18, 15)
-  }
-}
-
 fn update_room(self : Room) -> Unit {
   if self.stop.not() {
-    patch_out(Up)
-    patch_out(Down)
-    patch_out(Left)
-    patch_out(Right)
+    set_main_color_with_transparent(LightBrown)
+    @wasm4.rect(72, 138, 15, 18)
+    @wasm4.rect(71, 4, 15, 18)
+    @wasm4.rect(4, 72, 18, 15)
+    @wasm4.rect(138, 72, 18, 15)
     self.frame = frame()
   } else {
     self.frame = HitBox::new()
@@ -66,7 +56,7 @@ fn bind_style(self : Room, style : RoomStyle) -> Unit {
 }
 
 fn add_enemy(self : Room, enemy : Enemy) -> Unit {
-  self.enemys.set(enemy.get_id(), enemy)
+  self.enemys.set(enemy.id, enemy)
 }
 
 enum RoomStyle {
@@ -112,28 +102,28 @@ fn generate_room(level : Int) -> Room {
   } else {
     let room = Room::new(false, false)
     room.bind_style(room_styles[random.next(0, room_style_upper_index)])
-    let enemy_count = 3 + level / 2 + level / 10 + level / 20 + level / 40
-    let enemy_level = 1 + level / 8 + level / 10 + level / 15
+    let enemy_count = 3 + level / 3 + level / 10 + level / 20 + level / 40
+    let enemy_level = 1 + level / 10 + level / 15 + level / 20
     let mummy_count = random.next(0, enemy_count)
     let skeleton_count = random.next(0, enemy_count - mummy_count)
     let bug_count = enemy_count - mummy_count - skeleton_count
     for i = 1; i <= mummy_count; i = i + 1 {
       let id = id_pool.get_id()
       let pos = random.next_pos()
-      let mummy = Mummy::new(id, pos, enemy_level)
-      room.add_enemy(Mummy(mummy))
+      let mummy = new_mummy(id, pos, enemy_level)
+      room.add_enemy(mummy)
     }
     for i = 1; i <= skeleton_count; i = i + 1 {
       let id = id_pool.get_id()
       let pos = random.next_pos()
-      let skeleton = Skeleton::new(id, pos, enemy_level)
-      room.add_enemy(Skeleton(skeleton))
+      let skeleton = new_skeleton(id, pos, enemy_level)
+      room.add_enemy(skeleton)
     }
     for i = 1; i <= bug_count; i = i + 1 {
       let id = id_pool.get_id()
       let pos = random.next_pos()
-      let bug = Bug::new(id, pos, enemy_level)
-      room.add_enemy(Bug(bug))
+      let bug = new_bug(id, pos, enemy_level)
+      room.add_enemy(bug)
     }
     room
   }

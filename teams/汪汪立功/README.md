@@ -67,14 +67,15 @@
 
 ##### 剑
 
-- 伤害：10 + sword_level * 5
-- 范围：4 + sword_level / 4
+- 伤害：10 + sword_level * 8
+- 范围：6 + sword_level / 4
 - 攻击 CD：100 total, 10 + sword_level / 5 per tick
+- 击退：2 + sword_level / 4
 
 ##### 弹弓
 
 - 伤害：8 + slingshot_level * 2
-- 子弹速度：0.5 + 0.1 * slingshot_level
+- 子弹速度：0.5 + 0.2 * slingshot_level
 - 攻击 CD：100 total, 2 + slingshot_level / 3 * 2 per tick
 
 ### 怪物

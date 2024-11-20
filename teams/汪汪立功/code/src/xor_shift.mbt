@@ -14,7 +14,7 @@ fn next(self : RandomGenerator, range_l : Int, range_r : Int) -> Int {
 }
 
 fn next_pos(self : RandomGenerator) -> Position {
-  { x: self.next(40, 100).to_double(), y: self.next(40, 100).to_double() }
+  { x: self.next(40, 100).to_float(), y: self.next(40, 100).to_float() }
 }
 
 let random : RandomGenerator = RandomGenerator::new(114514)

@@ -1,6 +1,7 @@
 struct Game {
   mut level : Int
   mut stop : Bool
+  mut pause_cd : CD
   player : Player
   mut current_room : Room
 }
@@ -9,6 +10,7 @@ fn Game::new() -> Game {
   {
     level: 1,
     stop: false,
+    pause_cd: CD::new(100, 100),
     player: Player::new({ x: 80, y: 120 }),
     current_room: generate_room(1),
   }
@@ -16,40 +18,37 @@ fn Game::new() -> Game {
 
 fn update_level(self : Player) -> Unit {
   match check_next_room(self) {
-    Some(Up) => {
-      if game.current_room.upgrade {
-        self.level += 1
-        self.hp += 50
-      }
+    Some(direction) => {
       game.level += 1
-      game.current_room = generate_room(game.level)
-      self.pos = { x: 73, y: 121 }
-    }
-    Some(Down) => {
-      if game.current_room.upgrade {
-        self.hp = self.hp_max
+      match direction {
+        Up => {
+          if game.current_room.upgrade {
+            self.level += 1
+            self.hp += 50
+          }
+          self.pos = { x: 73, y: 121 }
+        }
+        Down => {
+          if game.current_room.upgrade {
+            self.hp = self.hp_max
+          }
+          self.pos = { x: 31, y: 77 }
+        }
+        Left => {
+          if game.current_room.upgrade {
+            self.sword = Sword::new(self.sword.level + 1)
+          }
+          self.pos = { x: 76, y: 30 }
+        }
+        Right => {
+          if game.current_room.upgrade {
+            self.slingshot = Slingshot::new(self.slingshot.level + 1)
+          }
+          self.pos = { x: 126, y: 73 }
+        }
       }
-      game.level += 1
       game.current_room = generate_room(game.level)
-      self.pos = { x: 31, y: 77 }
-    }
-    Some(Left) => {
-      if game.current_room.upgrade {
-        let level = self.sword.level
-        self.sword = Sword::new(level + 1)
-      }
-      game.level += 1
-      game.current_room = generate_room(game.level)
-      self.pos = { x: 76, y: 30 }
-    }
-    Some(Right) => {
-      if game.current_room.upgrade {
-        let level = self.slingshot.level
-        self.slingshot = Slingshot::new(level + 1)
-      }
-      game.level += 1
-      game.current_room = generate_room(game.level)
-      self.pos = { x: 126, y: 73 }
+      game.pause_cd = CD::new(50, 1)
     }
     None => ()
   }

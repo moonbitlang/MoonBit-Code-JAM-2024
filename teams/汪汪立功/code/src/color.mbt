@@ -1,14 +1,12 @@
-enum Color_Type {
-  Transparent
+enum Color {
   Black
   Brown
   LightBrown
   Grey
 }
 
-fn to_int(self : Color_Type) -> UInt {
+fn to_int(self : Color) -> UInt {
   match self {
-    Transparent => 0
     Black => 1
     Brown => 2
     LightBrown => 3
@@ -16,11 +14,11 @@ fn to_int(self : Color_Type) -> UInt {
   }
 }
 
-fn set_draw_color(index : UInt, color_type : Color_Type) -> Unit {
+fn set_draw_color(index : UInt, color_type : Color) -> Unit {
   @wasm4.set_draw_colors(index~, color_type.to_int())
 }
 
-fn set_main_color_with_transparent(color_type : Color_Type) -> Unit {
+fn set_main_color_with_transparent(color_type : Color) -> Unit {
   @wasm4.set_draw_colors(index=1, color_type.to_int())
   @wasm4.set_draw_colors(index=2, 0)
 }

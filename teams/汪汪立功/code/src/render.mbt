@@ -4,7 +4,7 @@ fn render(room : Room, player : Player) -> Unit {
     set_main_color_with_transparent(LightBrown)
     render_upgrade_room()
   }
-  if room.start {
+  else if room.start {
     set_main_color_with_transparent(LightBrown)
     render_start_room()
   }

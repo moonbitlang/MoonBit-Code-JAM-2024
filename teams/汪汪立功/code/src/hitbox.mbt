@@ -1,5 +1,5 @@
 enum Shape {
-  Rect(Double, Double, Double, Double)
+  Rect(Float,Float,Float,Float)
 }
 
 struct HitBox {
