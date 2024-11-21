@@ -13,6 +13,14 @@ const md = markdownit({
   typographer: true,
 })
 
+const FINAL_TEAMS = [
+  '布丁大馍',
+  '汪汪立功',
+  'GoToTheDoor',
+  '天地一！屋！大爱盟',
+  'Arc_En_Ciel',
+]
+
 function githubBtn(
   authorName: string,
   repoName: string,
@@ -45,7 +53,7 @@ type MetaInfo = {
   control?: string
   readme?: string
   cover: boolean
-  prInfo: Awaited<ReturnType<typeof getPRInfo>>
+  prInfo?: Awaited<ReturnType<typeof getPRInfo>>
 }
 
 const metaInfos = new Map<string, MetaInfo>()
@@ -78,6 +86,48 @@ async function allPulls() {
   return pulls
 }
 
+async function collectTeamInfo(teamName: string, pull_number?: number) {
+  if (!fs.existsSync(`teams/${teamName}/game.wasm`)) {
+    return
+  }
+  const prInfo = pull_number ? await getPRInfo(pull_number) : undefined
+  const metaInfo: MetaInfo = {
+    prInfo,
+    cover: false,
+  }
+
+  const files = fs
+    .readdirSync(`teams/${teamName}`, { withFileTypes: true })
+    .filter(d => d.isFile())
+    .map(d => d.name)
+
+  for (const file of files) {
+    const read = (file: string): string =>
+      fs.readFileSync(`teams/${teamName}/${file}`, 'utf8')
+    switch (file) {
+      case 'cover.png': {
+        metaInfo.cover = true
+        continue
+      }
+      case 'README.md': {
+        metaInfo.readme = read(file)
+        continue
+      }
+      case 'title': {
+        metaInfo.title = read(file)
+        continue
+      }
+      case 'control': {
+        metaInfo.control = read(file)
+        continue
+      }
+    }
+  }
+
+  console.log(`metainfo of ${teamName}:`, metaInfo)
+  metaInfos.set(teamName, metaInfo)
+}
+
 async function collectMetaInfos(): Promise<void> {
   const pulls = await allPulls()
   for (const pull of pulls) {
@@ -102,44 +152,15 @@ async function collectMetaInfos(): Promise<void> {
         if (!fs.existsSync(`teams/${teamName}`)) {
           continue
         }
-        const prInfo = await getPRInfo(pull_number)
-        const metaInfo: MetaInfo = {
-          prInfo,
-          cover: false,
-        }
-
-        const files = fs
-          .readdirSync(`teams/${teamName}`, { withFileTypes: true })
-          .filter(d => d.isFile())
-          .map(d => d.name)
-
-        for (const file of files) {
-          const read = (file: string): string =>
-            fs.readFileSync(`teams/${teamName}/${file}`, 'utf8')
-          switch (file) {
-            case 'cover.png': {
-              metaInfo.cover = true
-              continue
-            }
-            case 'README.md': {
-              metaInfo.readme = read(file)
-              continue
-            }
-            case 'title': {
-              metaInfo.title = read(file)
-              continue
-            }
-            case 'control': {
-              metaInfo.control = read(file)
-              continue
-            }
-          }
-        }
-
-        console.log(`metainfo of ${teamName}:`, metaInfo)
-        metaInfos.set(teamName, metaInfo)
+        await collectTeamInfo(teamName, pull_number)
       }
     }
+  }
+  const teams = fs.readdirSync('teams', { withFileTypes: true })
+  for (const team of teams) {
+    if (!team.isDirectory()) continue
+    if (metaInfos.has(team.name)) continue
+    await collectTeamInfo(team.name)
   }
 }
 
@@ -149,22 +170,24 @@ function renderGameCard(teamName: string, metaInfo: MetaInfo): string {
     : 'default-cover.png'
 
   const teamPath = querystring.escape(teamName)
-  const authorName = metaInfo.prInfo.head.user.login
-  const repoName = metaInfo.prInfo.head.repo?.name
-
-  if (repoName === undefined) {
-    throw new Error(`renderGameCard: repoName is undefined`)
-  }
+  const authorName = metaInfo.prInfo?.head.user.login
+  const repoName = metaInfo.prInfo?.head.repo?.name
 
   const footer = metaInfo.title
     ? `<h2>${metaInfo.title}</h2><p>${teamName}</p>`
     : `<p>${teamName}</p>`
 
+  let button
+  if (authorName && repoName) {
+    button = githubBtn(authorName, repoName, { large: true })
+  } else {
+    button = ''
+  }
   return /*html*/ `
 <div class='game-card'>
   <a href='${teamPath}/index.html'>
     <div class='game-card__star'>
-      ${githubBtn(authorName, repoName, { large: true })}
+      ${button}
     </div>
     <div class='game-card__cover'>
       <img src='${coverPath}'/>
@@ -346,35 +369,24 @@ function gameIndexHtml(teamName: string, metaInfo: MetaInfo): string {
   const title = metaInfo.title ?? teamName
   const control = metaInfo.control ?? ''
   const readme = metaInfo.readme ? md.render(metaInfo.readme) : ''
-  const authorName = metaInfo.prInfo.head.user.login
-  const repoName = metaInfo.prInfo.head.repo?.name
-  const authorUrl = metaInfo.prInfo.head.user.html_url
-  const avatarUrl = metaInfo.prInfo.head.user.avatar_url
-  const updateTime = metaInfo.prInfo.merged_at
 
-  if (repoName === undefined || updateTime === null) {
-    throw new Error(
-      JSON.stringify(
-        {
-          title,
-          control,
-          readme,
-          avatarUrl,
-          updateTime,
-        },
-        null,
-        2,
-      ),
-    )
-  }
+  const authorName = metaInfo.prInfo?.head.user.login
+  const repoName = metaInfo.prInfo?.head.repo?.name
+  const authorUrl = metaInfo.prInfo?.head.user.html_url
+  const avatarUrl = metaInfo.prInfo?.head.user.avatar_url
+  const updateTime = metaInfo.prInfo?.merged_at
 
-  const updateDate = new Date(updateTime).toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  const updateDate = updateTime
+    ? new Date(updateTime).toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : undefined
 
-  const avatar = /*html*/ `
+  const avatar =
+    authorUrl && avatarUrl && authorName && updateDate
+      ? /*html*/ `
     <div class="avatar">
       <a href="${authorUrl}" class="avatar__photo" target="_blank">
         <img src="${avatarUrl}"/>
@@ -387,6 +399,7 @@ function gameIndexHtml(teamName: string, metaInfo: MetaInfo): string {
       </div>
     </div>
   `
+      : ''
   return /*html*/ `
 <!DOCTYPE html>
 <html lang="en">
@@ -503,9 +516,15 @@ function gameIndexHtml(teamName: string, metaInfo: MetaInfo): string {
         <iframe class="wasm4-game" src="game.html" frameborder="0"></iframe>
         <p class="control">${control}</p>
         <h1>${title}</h1>
-        <p class="vote">Star 仓库，为 ta 投票
-        ${githubBtn(authorName, repoName, { large: true })}
-        </p>
+        ${
+          authorName && repoName
+            ? `<p class="vote">Star 仓库，为 ta 投票 ${githubBtn(
+                authorName,
+                repoName,
+                { large: false },
+              )}</p>`
+            : ''
+        }
         ${avatar}
         <article>
           ${readme}
