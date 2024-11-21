@@ -1,0 +1,20 @@
+{
+  "import": [
+    "moonbitlang/wasm4",
+    "moonbit/game/lib/w4x"
+    
+  ],
+  "link": {
+    "wasm": {
+      "exports": [
+        "start",
+        "update"
+      ],
+      "import-memory": {
+        "module": "env",
+        "name": "memory"
+      },
+      "heap-start-address": 6560
+    }
+  }
+}
