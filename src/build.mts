@@ -205,6 +205,10 @@ function indexHtml(): string {
     .map(e => renderGameCard(...e))
     .join('\n')
 
+  const finalGameCards = FINAL_TEAMS.map(teamName =>
+    renderGameCard(teamName, metaInfos.get(teamName)!),
+  ).join('\n')
+
   return /*html*/ `
 <!DOCTYPE html>
 <html lang="en">
@@ -271,6 +275,12 @@ function indexHtml(): string {
         .buttons {
           flex-direction: column;
         }
+      }
+
+      .game-cards-final {
+        display: grid;
+        grid-template-columns: ${FINAL_TEAMS.map(() => '1fr').join(' ')};
+        gap: 1rem;
       }
 
       .game-cards {
@@ -349,11 +359,13 @@ function indexHtml(): string {
       <main>
         <section class='intro-section'>
           <h1>MoonBit Code JAM 2024</h1>
+          <p>决赛作品展示</p>
+        </section>
+        <div class='game-cards-final'>
+        ${finalGameCards}
+        </div>
+        <section class='intro-section'>
           <p>选手提交作品展示</p>
-          <div class='buttons'>
-            <a class='button' href='https://tianchi.aliyun.com/competition/entrance/532262'>立即报名</a>
-            <a class='button' href='https://github.com/moonbitlang/MoonBit-Code-JAM-2024'>提交作品</a>
-          </div>
         </section>
         <div class='game-cards'>
         ${gameCards}
