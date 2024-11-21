@@ -279,7 +279,7 @@ function indexHtml(): string {
 
       .game-cards-final {
         display: grid;
-        grid-template-columns: ${FINAL_TEAMS.map(() => '1fr').join(' ')};
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1rem;
       }
 
