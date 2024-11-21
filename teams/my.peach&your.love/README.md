@@ -43,6 +43,9 @@ lancerlose -- 美术及场景
 kawhiyy -- 程序及游戏背景
 
 
+## 运行视频链接
+【百分之99的人玩不懂这个游戏】https://www.bilibili.com/video/BV1rYUVYBEB8?vd_source=1cdce539763278f050a606928611cc70
+
 ## 以下是关于密码的提示，实在解不开的玩家可以看看
 
 
