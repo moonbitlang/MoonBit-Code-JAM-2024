@@ -533,7 +533,7 @@ function gameIndexHtml(teamName: string, metaInfo: MetaInfo): string {
             ? `<p class="vote">Star 仓库，为 ta 投票 ${githubBtn(
                 authorName,
                 repoName,
-                { large: false },
+                { large: true },
               )}</p>`
             : ''
         }
