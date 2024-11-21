@@ -1,0 +1,7 @@
+{
+	"import": [
+	  "moonbitlang/wasm4",
+	  "GAME/time_cnt",
+	  "GAME/bitset"
+	]
+}

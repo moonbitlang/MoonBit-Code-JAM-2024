@@ -30,3 +30,9 @@
    拾取后发射一段时间的高伤害高爆弹
 
 ## 游戏有很多其他的“特性”建议自行游玩查看QWQ
+
+## 宣传链接
+
+[Moonbit初体验——大一小白游戏创作 - Daster的文章 - 知乎](https://zhuanlan.zhihu.com/p/6863463180)
+
+[天地一！屋！大爱盟——飞机大战 at moonbit 开发心得 - 轩Demonmaster - 博客园](https://www.cnblogs.com/LQX-OI/p/18540898)
