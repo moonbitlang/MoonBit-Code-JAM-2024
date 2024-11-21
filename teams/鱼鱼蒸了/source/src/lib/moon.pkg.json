@@ -1,0 +1,8 @@
+{
+  "import": [
+    {
+      "path": "moonbitlang/wasm4",
+      "alias": "wasm"
+    }
+  ]
+}
