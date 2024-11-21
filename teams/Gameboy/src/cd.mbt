@@ -1,0 +1,12 @@
+struct Character_cd{
+mut f1_cd:Int
+mut d1_cd:Int
+mut s1_cd:Int
+mut f2_cd:Int
+mut d2_cd:Int
+mut s2_cd:Int}
+let tanker_cd:Character_cd={f1_cd:180,d1_cd:240,s1_cd:720,f2_cd:30,d2_cd:30,s2_cd:30}
+let stive_cd:Character_cd={f1_cd:60,d1_cd:240,s1_cd:180,f2_cd:30,d2_cd:30,s2_cd:30}
+let scentist_cd:Character_cd={f1_cd:60,d1_cd:240,s1_cd:180,f2_cd:30,d2_cd:30,s2_cd:30}
+let knight_cd:Character_cd={f1_cd:180,d1_cd:240,s1_cd:180,f2_cd:30,d2_cd:30,s2_cd:30}
+let ai_cd:Character_cd={f1_cd:180,d1_cd:240,s1_cd:180,f2_cd:30,d2_cd:30,s2_cd:30}
